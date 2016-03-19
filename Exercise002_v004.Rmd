@@ -1,0 +1,255 @@
+---
+title: "N-Play Variability"
+author: "davegoblue"
+date: "March 19, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview and Synopsis  
+This routine analyzes variability of N-play video poker results based on simulation data made available by the Wizard of Odds <http://wizardofodds.com/games/video-poker/appendix/2/>.  The game simulated was 9/6 Jacks or Better, and this routine looks at the impact of playing 5,000 hands with 1/3/5/10/50/100 lines per hand.  The code broadly copies routines from Exercise002_v003.R, but with the intent of storing figures and summaries.
+  
+## Data Processing  
+###_Coding Routine_  
+The Wizard of Odds file was pre-processed in Excel and saved as a CSV once per each of the desired N-play outcomes.  The file is read in, parsed to eliminate any unwanted values, and then assessed based on random draws from uniform(0,1).  Results are stored for the final outcome and the minimum cumulative outcomes.  
+
+Below is the routine for creating the data.  It has been converted to a function so it can be re-run multiple times.  
+
+First, a function is created to read and process files for mapping probabilities to outcomes.  
+```{r}
+
+getBaseOutcomes <- function(myFileName="BaseOutcomes.csv", myDelete=NULL, forceEQ=FALSE) {
+    
+    if (file.exists(myFileName)) {
+        baseOutcomes <- read.csv(myFileName,stringsAsFactors = FALSE)
+        if (ncol(baseOutcomes) != 2) { stop("Error in CSV file, should have exactly 2 columns") }
+        colnames(baseOutcomes) <- c("probs","outcomes")
+    } else {
+        baseOutcomes <- data.frame(probs=c(0.01,0.02,0.05,0.18,0.24,0.50),outcomes=c(10,5,2,1,0,-1))
+    }
+    
+    baseOutcomes <- baseOutcomes[baseOutcomes$probs != 0,] ## Can have zeroes as inputs -- ignore those
+    
+    if ( forceEQ ) {
+        pDelta <- sum(baseOutcomes$probs) - 1
+        if ( abs(pDelta) < 0.0000001 & 
+             abs(pDelta) / baseOutcomes[nrow(baseOutcomes),]$probs < 0.1
+            ) 
+        {
+            print(paste0("Modifying probablities ",paste0(baseOutcomes[nrow(baseOutcomes),],collapse=" ")))
+            baseOutcomes[nrow(baseOutcomes),]$probs <- baseOutcomes[nrow(baseOutcomes),]$probs - pDelta
+            print(paste0("New probablities ",paste0(baseOutcomes[nrow(baseOutcomes),],collapse=" ")))
+        }
+    }
+    
+    if (sum(baseOutcomes$probs)!=1 | min(baseOutcomes$probs) < 0 | 
+        sum(is.na(baseOutcomes$probs)) > 0 | sum(is.na(baseOutcomes$outcomes)) > 0) { 
+        stop("Please resolve the issue with inputs for probs and outcomes, aborting") 
+    }
+    
+    ## Store the original value read in as outcomes
+    baseOutcomes$oldOutcomes <- baseOutcomes$outcomes
+    
+    ## Null the baseOutcomes$outcomes where outcomes >= X
+    if (!is.null(myDelete)) {
+        myCond <- parse(text=paste0("baseOutcomes$outcomes",myDelete))
+        baseOutcomes$outcomes[eval(myCond)] <- 0
+        print(paste0("Converted all cases where ",myCond," to baseOutcomes$outcomes = 0"))
+    }
+    
+    baseMean <- sum(baseOutcomes$probs*baseOutcomes$outcomes)
+    baseVar <- sum(baseOutcomes$probs*(baseOutcomes$outcomes-baseMean)^2)
+    
+    print(paste0("Probabilities sum to 1.  Outcomes has mean ",format(baseMean,digits=3),
+                 " and variance ",format(baseVar,digits=3)))
+
+    return(baseOutcomes)
+}
+
+```
+  
+Second, a function is created to draw the random variables and calculate the outcomes database.  
+```{r}
+
+calcOutcomes <- function(baseOutcomes=baseOutcomes,nPlay=1) {
+    
+    ## Allow nTrials, nPerTrial, and myHurdle to come from global environment
+    print(paste0("Running ",nPlay,"-play with nTrials=",nTrials,
+                 " nPerTrial=",nPerTrial," and hurdle ",myHurdle
+                 )
+          )
+    
+    myCDF <- numeric(nrow(baseOutcomes)+1)
+    myCDF[1] <- 0
+
+    for ( intCtr in 1:nrow(baseOutcomes) ) {
+        myCDF[intCtr+1] <- myCDF[intCtr] + baseOutcomes$probs[intCtr]
+    }
+
+    mtxCumOutcomes <- matrix(baseOutcomes$outcomes[findInterval(matrix(data=runif(nTrials*nPerTrial,0,1),
+                                                                       nrow=nPerTrial,
+                                                                       ncol=nTrials
+                                                                       ),
+                                                                myCDF,rightmost.closed=TRUE
+                                                                )
+                                               ],
+                         nrow=nPerTrial,
+                         ncol=nTrials
+                         )
+
+    print(paste0("Ouctomes across ",nTrials*nPerTrial," draws of ",nPlay,"-play have mean: ",
+                 format(mean(mtxCumOutcomes),digits=3)," and variance: ",
+                 format(sd(mtxCumOutcomes)^2,digits=3)
+                 )
+         )
+
+    mtxCumOutcomes <- apply(mtxCumOutcomes,2,FUN=cumsum)  ## About 2.5 seconds for 12,000 x 5,000
+    maxPerTrial <- apply(mtxCumOutcomes,2,FUN=max)  ## About 1.0 seconds for 12,000 x 5,000
+    minPerTrial <- apply(mtxCumOutcomes,2,FUN=min)  ## About 1.0 seconds for 12,000 x 5,000
+    lastPerTrial <- as.numeric(mtxCumOutcomes[nrow(mtxCumOutcomes),])
+    dfSummary <- data.frame(myTrial = 1:nTrials, myMax = maxPerTrial, myMin = minPerTrial, 
+                            myLast = lastPerTrial, myCond = FALSE, myN_Cond = NA, myVal_Cond = NA
+                            )
+    dfSummary$myCond <- eval(parse(text=paste0("dfSummary$myMin",myHurdle)))
+    
+    foo <- function(x) { 
+        which(eval(parse(text=paste0("x",myHurdle))))[1]
+    }
+    
+    dfSummary$myN_Cond <- apply(mtxCumOutcomes,2,FUN=foo)  ## About 2.5 seconds for 12,000 x 5,000
+    
+    for ( intCtr in 1:nTrials ) {
+        dfSummary$myVal_Cond[intCtr] <- mtxCumOutcomes[dfSummary$myN_Cond[intCtr],dfSummary$myTrial[intCtr]]
+    }
+    
+    return(dfSummary)
+}
+
+```
+
+Additionally, a function is created to graph the data and store the outputs.  
+```{r}
+
+graphSummary <- function(graphData, nPlay=1) {
+    
+    graphData <- graphData[order(-graphData$myCond, graphData$myN_Cond, -graphData$myLast),]
+    print(summary(graphData))
+
+    ## Have the x and y units auto-calculated
+    minX <- min(graphData$myMin)                  ## Find most negative element
+    maxX <- max(0, graphData$myLast)              ## Find most positive element (use 0 if all are negative)
+    powX <- log10(max(1, abs(minX), abs(maxX)))   ## Find rough "power" of data
+
+    unitX <- 10^(round(powX-0.5,0)-1)             ## If thousands, use hundreds; if hundreds, use tens; etc.
+    minX <- unitX*(floor(minX/unitX)-1)           ## Round to similar units as unitX
+    maxX <- unitX*(ceiling(maxX/unitX)+1)         ## Round to similar units as unitX
+
+    hist(graphData$myMin,
+         col=rgb(1,0,0,.25),
+         main=paste0("Results: ",nTrials," Trials (",nPerTrial," ",
+                     nPlay,"-play draws per trial)"
+                     ), 
+         xlab="Units", ylab="N Trials",
+         breaks=seq(minX,maxX,by=unitX),
+         xlim=c(minX, maxX)
+         )
+
+    hist(graphData$myLast,col=rgb(0,0,1,.25),
+         breaks=seq(minX,maxX,by=unitX),
+         xlim=c(minX,maxX),
+         add=TRUE
+         )
+
+    legend("topright",col=c(rgb(1,0,0,.25),rgb(0,0,1,.25),rgb(0.5,0,0.5,.5)),
+           legend=c("Minimum","Final","Overlap"),pch=20,pt.cex=2
+           )
+
+}
+
+
+```
+
+###_Prepare the global parameters_  
+Finally, the key global parameters are set.  
+
+```{r}
+
+nTrials <- 2000
+nPerTrial <- 5000
+myHurdle <- "<=-500"
+
+```
+  
+  
+## Results  
+The simulation is repeated for each of the desired N-play outcomes.  In this case, we have run the routine for 1/3/5/10/50/100 play.  
+  
+
+###_Results for 1-play_  
+```{r}
+
+## Run for 1-play
+baseOutcomes <- getBaseOutcomes(myFileName="Play001Outcomes.csv",forceEQ=TRUE)
+dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=1)
+graphSummary(dfSummary, nPlay=1)
+
+```
+  
+    
+###_Results for 3-play_  
+```{r}
+
+## Run for 3-play
+baseOutcomes <- getBaseOutcomes(myFileName="Play003Outcomes.csv",forceEQ=TRUE)
+dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=3)
+graphSummary(dfSummary, nPlay=3)
+
+```
+  
+  
+###_Results for 5-play_  
+```{r}
+
+## Run for 5-play
+baseOutcomes <- getBaseOutcomes(myFileName="Play005Outcomes.csv",forceEQ=TRUE)
+dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=5)
+graphSummary(dfSummary, nPlay=5)
+
+```
+  
+  
+###_Results for 10-play_  
+```{r}
+
+## Run for 10-play
+baseOutcomes <- getBaseOutcomes(myFileName="Play010Outcomes.csv",forceEQ=TRUE)
+dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=10)
+graphSummary(dfSummary, nPlay=10)
+
+```
+  
+  
+###_Results for 50-play_  
+```{r}
+
+## Run for 50-play
+baseOutcomes <- getBaseOutcomes(myFileName="Play050Outcomes.csv",forceEQ=TRUE)
+dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=50)
+graphSummary(dfSummary, nPlay=50)
+
+```
+  
+  
+###_Results for 100-play_  
+```{r}
+
+## Run for 100-play
+baseOutcomes <- getBaseOutcomes(myFileName="Play100Outcomes.csv",forceEQ=TRUE)
+dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=100)
+graphSummary(dfSummary, nPlay=100)
+
+```
+  
