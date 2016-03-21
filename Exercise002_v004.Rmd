@@ -184,12 +184,15 @@ Finally, the key global parameters are set.
 nTrials <- 2000
 nPerTrial <- 50000
 myHurdle <- "<=-500"
+storePer <- 10
 
 ```
   
   
 ## Results  
 The simulation is repeated for each of the desired N-play outcomes.  In this case, we have run the routine for 1/3/5/10/50/100 play.  
+
+Further, we save every 10th hand for 1-play, 3-play, 5-play, and 10-play.
   
 
 ###_Results for 1-play_  
@@ -199,7 +202,7 @@ The simulation is repeated for each of the desired N-play outcomes.  In this cas
 baseOutcomes <- getBaseOutcomes(myFileName="Play001Outcomes.csv",forceEQ=TRUE)
 dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=1)
 graphSummary(dfSummary, nPlay=1)
-mtxCum001 <- mtxSaver
+mtxCum001 <- mtxSaver[storePer * (1:(nPerTrial/storePer)),]
 
 ```
   
@@ -211,7 +214,7 @@ mtxCum001 <- mtxSaver
 baseOutcomes <- getBaseOutcomes(myFileName="Play003Outcomes.csv",forceEQ=TRUE)
 dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=3)
 graphSummary(dfSummary, nPlay=3)
-mtxCum003 <- mtxSaver
+mtxCum003 <- mtxSaver[storePer * (1:(nPerTrial/storePer)),]
 
 ```
   
@@ -223,7 +226,7 @@ mtxCum003 <- mtxSaver
 baseOutcomes <- getBaseOutcomes(myFileName="Play005Outcomes.csv",forceEQ=TRUE)
 dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=5)
 graphSummary(dfSummary, nPlay=5)
-
+mtxCum005 <- mtxSaver[storePer * (1:(nPerTrial/storePer)),]
 ```
   
   
@@ -234,6 +237,7 @@ graphSummary(dfSummary, nPlay=5)
 baseOutcomes <- getBaseOutcomes(myFileName="Play010Outcomes.csv",forceEQ=TRUE)
 dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=10)
 graphSummary(dfSummary, nPlay=10)
+mtxCum010 <- mtxSaver[storePer * (1:(nPerTrial/storePer)),]
 
 ```
   
@@ -260,93 +264,93 @@ graphSummary(dfSummary, nPlay=100)
 ```
   
   
-###_Plot out cumulative quantiles for 1-play and 3-play_  
-The cumulative data for 1-play has been stored and can be analyzed.  We prepare a quantiles function and apply it to the respective cumulative outcomes files.  
+###_Plot out cumulative quantiles_  
+The cumulative data for 1/3/5/10-play has been stored and can be analyzed.  We prepare a quantiles function and apply it to the respective cumulative outcomes files.  
   
 ```{r}
 
 fooFake <- function(x) { quantile(x,c(0.001,0.01,0.05,0.10,0.25,0.50,0.75,0.90,0.95,0.99,1)) }
 myQuants001 <- t(apply(mtxCum001, 1, FUN=fooFake))
 myQuants003 <- t(apply(mtxCum003, 1, FUN=fooFake))
-```
-
-Next, we can plot the cumulative results for the 1-play data.  
-  
-  
-```{r}
-
-plot(x=1:50000, y=5*myQuants001[1:50000 , 2]/1000, col="purple", 
-     type="l", lwd=2, main="1-play results", xlab="Hand number",
-     ylim=c(-20,5)
-     )
-lines(x=1:50000,y=5*myQuants001[1:50000 , 3]/1000,col="blue")
-lines(x=1:50000,y=5*myQuants001[1:50000 , 5]/1000,col="orange")
-lines(x=1:50000,y=5*myQuants001[1:50000 , 6]/1000,col="dark green")
-
-abline(h=c(0,-4,-8),lty=2)
-
-abline(v=c(which(5*myQuants001[,2]/1000 <= -4)[1], 
-           which(5*myQuants001[,2]/1000 <= -8)[1]
-           ), col="purple", lty=2
-       )
-
-abline(v=c(which(5*myQuants001[,5]/1000 <= -4)[1], 
-           which(5*myQuants001[,5]/1000 <= -8)[1]
-           ), col="orange", lty=2
-       )
-
-legend("topright", legend=c("Median","25%","5%","1%"), lwd=3, 
-       cex=0.75, col=c("dark green","orange","blue","purple")
-       )
-
-text(x=20000, y=5, paste0("Results hit 1% at: ", which(5*myQuants001[,2]/1000 <= -4)[1],
-                          " and ", which(5*myQuants001[,2]/1000 <= -8)[1]
-                          ) ,cex=0.75
-     )
-
-text(x=20000, y=3, paste0("Results hit 25% at: ", which(5*myQuants001[,5]/1000 <= -4)[1],
-                          " and ", which(5*myQuants001[,5]/1000 <= -8)[1]
-                          ) ,cex=0.75
-     )
+myQuants005 <- t(apply(mtxCum005, 1, FUN=fooFake))
+myQuants010 <- t(apply(mtxCum010, 1, FUN=fooFake))
 ```
   
   
-We can also plot the cumulative results for the 3-play data.  
+Next, we generate a function for graphing the cumulative returns of various data:  
+  
+```{r}
+graphCumulative <- function(quantFile, storePer=1, nPlay, 
+                            yLimit=c(-20,5), abLimit=c(0,-4,-8)
+                            ) {
+
+    keyX <- seq(storePer, nPerTrial, by=storePer)
+    
+    plot(x=keyX, y=5 * quantFile[keyX/storePer , 2]/1000, col="purple", 
+         type="l", lwd=2, main=paste0(nPlay, "-play results"), 
+         xlab="Hand number", ylim=yLimit
+         )
+    
+    lines(x=keyX, y=5*quantFile[keyX/storePer , 3]/1000,col="blue")
+    lines(x=keyX, y=5*quantFile[keyX/storePer , 5]/1000,col="orange")
+    lines(x=keyX, y=5*quantFile[keyX/storePer , 6]/1000,col="dark green")
+
+    abline(h=abLimit, lty=2)
+
+    abline(v=c(storePer * which(5 * quantFile[,2]/1000 <= abLimit[2])[1], 
+               storePer * which(5 * quantFile[,2]/1000 <= abLimit[3])[1]
+               ), col="purple", lty=2
+           )
+
+    abline(v=c(storePer * which(5 * quantFile[,5]/1000 <= abLimit[2])[1], 
+               storePer * which(5 * quantFile[,5]/1000 <= abLimit[3])[1]
+               ), col="orange", lty=2
+           )
+
+    legend("topright", legend=c("Median","25%","5%","1%"), lwd=3, 
+           cex=0.75, col=c("dark green","orange","blue","purple")
+           )
+
+    text(x=.4*nPerTrial, y=yLimit[2], 
+         paste0("Results hit 1% at: ", 
+                storePer * which(5 * quantFile[,2]/1000 <= abLimit[2])[1], 
+                " and ", 
+                storePer * which(5 * quantFile[,2]/1000 <= abLimit[3])[1]
+                ) ,cex=0.75
+         )
+
+    text(x=.4*nPerTrial, y=(yLimit[2] + .1 * (yLimit[1] - yLimit[2]) ), 
+         paste0("Results hit 25% at: ", 
+                storePer * which(5 * quantFile[,5]/1000 <= abLimit[2])[1], 
+                " and ", 
+                storePer * which(5 * quantFile[,5]/1000 <= abLimit[3])[1]
+                ) ,cex=0.75
+         )
+    
+}
+
+```
+  
+  
+And, then we run the function for 1/3/5/10 play.  
   
 ```{r}
 
-plot(x=1:50000, y=5*myQuants003[1:50000 , 2]/1000, col="purple", 
-     type="l", lwd=2, main="3-play results", xlab="Hand number",
-     ylim=c(-20,5)
-     )
-lines(x=1:50000,y=5*myQuants003[1:50000 , 3]/1000,col="blue")
-lines(x=1:50000,y=5*myQuants003[1:50000 , 5]/1000,col="orange")
-lines(x=1:50000,y=5*myQuants003[1:50000 , 6]/1000,col="dark green")
+graphCumulative(quantFile=myQuants001, storePer=storePer, nPlay=1, 
+                yLimit=c(-10, 2.5), abLimit=c(0,-2,-4)
+                )
 
-abline(h=c(0,-4,-8),lty=2)
+graphCumulative(quantFile=myQuants003, storePer=storePer, nPlay=3, 
+                yLimit=c(-20, 5), abLimit=c(0,-5,-10)
+                )
 
-abline(v=c(which(5*myQuants003[,2]/1000 <= -4)[1], 
-           which(5*myQuants003[,2]/1000 <= -8)[1]
-           ), col="purple", lty=2
-       )
+graphCumulative(quantFile=myQuants005, storePer=storePer, nPlay=5, 
+                yLimit=c(-50, 12.5), abLimit=c(0,-10,-20)
+                )
 
-abline(v=c(which(5*myQuants003[,5]/1000 <= -4)[1], 
-           which(5*myQuants003[,5]/1000 <= -8)[1]
-           ), col="orange", lty=2
-       )
+graphCumulative(quantFile=myQuants010, storePer=storePer, nPlay=10, 
+                yLimit=c(-100, 25), abLimit=c(0,-20,-40)
+                )
 
-legend("topright", legend=c("Median","25%","5%","1%"), lwd=3, 
-       cex=0.75, col=c("dark green","orange","blue","purple")
-       )
-
-text(x=20000, y=5, paste0("Results hit 1% at: ", which(5*myQuants003[,2]/1000 <= -4)[1],
-                          " and ", which(5*myQuants003[,2]/1000 <= -8)[1]
-                          ) ,cex=0.75
-     )
-
-text(x=20000, y=3, paste0("Results hit 25% at: ", which(5*myQuants003[,5]/1000 <= -4)[1],
-                          " and ", which(5*myQuants003[,5]/1000 <= -8)[1]
-                          ) ,cex=0.75
-     )
 ```
 
