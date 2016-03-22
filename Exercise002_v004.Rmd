@@ -286,6 +286,7 @@ graphCumulative <- function(quantFile, storePer=1, nPlay,
 
     keyX <- seq(storePer, nPerTrial, by=storePer)
     
+    ## Plot #1 is quantiles for cumulative returns (in units) by hand
     plot(x=keyX, y=5 * quantFile[keyX/storePer , 2]/1000, col="purple", 
          type="l", lwd=2, main=paste0(nPlay, "-play results"), 
          xlab="Hand number", ylim=yLimit
@@ -327,6 +328,24 @@ graphCumulative <- function(quantFile, storePer=1, nPlay,
                 ) ,cex=0.75
          )
     
+    
+    ## Plot #2 is quantiles for cumulative returns (in percentage) by # base hands
+    keyXPct <- keyX * nPlay
+    
+    plot(x=keyX, y=quantFile[keyX/storePer , 2] / keyXPct, col="purple", 
+         type="l", lwd=2, main=paste0(nPlay, "-play results"), 
+         xlab="Hand number", ylim=c(-0.1,0.025)
+         )
+    
+    lines(x=keyX, y=quantFile[keyX/storePer , 3]/keyXPct,col="blue")
+    lines(x=keyX, y=quantFile[keyX/storePer , 5]/keyXPct,col="orange")
+    lines(x=keyX, y=quantFile[keyX/storePer , 6]/keyXPct,col="dark green")
+    
+    legend("topright", legend=c("Median","25%","5%","1%"), lwd=3, 
+           cex=0.75, col=c("dark green","orange","blue","purple")
+           )
+    
+    abline(h=c(0,-0.02,-0.04), lty=2)
 }
 
 ```
