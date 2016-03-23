@@ -175,17 +175,15 @@ Finally, the key global parameters are set.
 
 
 ```r
-nTrials <- 2000
-nPerTrial <- 50000
+nTrials <- 1000
+nPerTrial <- 80000
 myHurdle <- "<=-500"
 storePer <- 10
 ```
   
   
 ## Results  
-The simulation is repeated for each of the desired N-play outcomes.  In this case, we have run the routine for 1/3/5/10/50/100 play.  
-
-Further, we save every 10th hand for 1-play, 3-play, 5-play, and 10-play.
+The simulation is repeated for each of the desired N-play outcomes.  In this case, we have run the routine for 1/3/5/10/50/100 play.  Further, we save the cumulative results at the end of every 10th hand.  
   
 
 ###_Results for 1-play_  
@@ -206,8 +204,8 @@ dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=1)
 ```
 
 ```
-## [1] "Running 1-play with nTrials=2000 nPerTrial=50000 and hurdle <=-500"
-## [1] "Ouctomes across 1e+08 draws of 1-play have mean: -0.00459 and variance: 19.5"
+## [1] "Running 1-play with nTrials=1000 nPerTrial=80000 and hurdle <=-500"
+## [1] "Ouctomes across 8e+07 draws of 1-play have mean: -0.00437 and variance: 19.5"
 ```
 
 ```r
@@ -215,22 +213,22 @@ graphSummary(dfSummary, nPlay=1)
 ```
 
 ```
-##     myTrial           myMax            myMin             myLast       
-##  Min.   :   1.0   Min.   :  -1.0   Min.   :-2737.0   Min.   :-2730.0  
-##  1st Qu.: 500.8   1st Qu.:  59.0   1st Qu.:-1192.2   1st Qu.: -964.0  
-##  Median :1000.5   Median : 330.0   Median : -777.0   Median : -335.5  
-##  Mean   :1000.5   Mean   : 595.9   Mean   : -830.9   Mean   : -229.7  
-##  3rd Qu.:1500.2   3rd Qu.: 934.2   3rd Qu.: -409.8   3rd Qu.:  394.0  
-##  Max.   :2000.0   Max.   :3948.0   Max.   :    1.0   Max.   : 3719.0  
-##                                                                       
+##     myTrial           myMax             myMin             myLast       
+##  Min.   :   1.0   Min.   :  -1.00   Min.   :-3370.0   Min.   :-3345.0  
+##  1st Qu.: 250.8   1st Qu.:  86.75   1st Qu.:-1547.0   1st Qu.:-1191.2  
+##  Median : 500.5   Median : 485.50   Median :-1023.0   Median : -433.0  
+##  Mean   : 500.5   Mean   : 724.40   Mean   :-1100.3   Mean   : -349.5  
+##  3rd Qu.: 750.2   3rd Qu.:1084.00   3rd Qu.: -544.5   3rd Qu.:  338.8  
+##  Max.   :1000.0   Max.   :6105.00   Max.   :    1.0   Max.   : 6018.0  
+##                                                                        
 ##    myCond           myN_Cond       myVal_Cond  
-##  Mode :logical   Min.   : 4397   Min.   :-500  
-##  FALSE:620       1st Qu.:11769   1st Qu.:-500  
-##  TRUE :1380      Median :16673   Median :-500  
-##  NA's :0         Mean   :19550   Mean   :-500  
-##                  3rd Qu.:25209   3rd Qu.:-500  
-##                  Max.   :49957   Max.   :-500  
-##                  NA's   :620     NA's   :620
+##  Mode :logical   Min.   : 3919   Min.   :-500  
+##  FALSE:226       1st Qu.:12676   1st Qu.:-500  
+##  TRUE :774       Median :18574   Median :-500  
+##  NA's :0         Mean   :24115   Mean   :-500  
+##                  3rd Qu.:31359   3rd Qu.:-500  
+##                  Max.   :79045   Max.   :-500  
+##                  NA's   :226     NA's   :226
 ```
 
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
@@ -258,8 +256,8 @@ dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=3)
 ```
 
 ```
-## [1] "Running 3-play with nTrials=2000 nPerTrial=50000 and hurdle <=-500"
-## [1] "Ouctomes across 1e+08 draws of 3-play have mean: -0.0158 and variance: 67.2"
+## [1] "Running 3-play with nTrials=1000 nPerTrial=80000 and hurdle <=-500"
+## [1] "Ouctomes across 8e+07 draws of 3-play have mean: -0.0163 and variance: 67.4"
 ```
 
 ```r
@@ -268,21 +266,21 @@ graphSummary(dfSummary, nPlay=3)
 
 ```
 ##     myTrial           myMax            myMin           myLast       
-##  Min.   :   1.0   Min.   :  -3.0   Min.   :-5951   Min.   :-5847.0  
-##  1st Qu.: 500.8   1st Qu.: 151.8   1st Qu.:-2612   1st Qu.:-2120.2  
-##  Median :1000.5   Median : 685.0   Median :-1696   Median : -870.0  
-##  Mean   :1000.5   Mean   :1003.5   Mean   :-1823   Mean   : -792.4  
-##  3rd Qu.:1500.2   3rd Qu.:1491.2   3rd Qu.: -887   3rd Qu.:  423.5  
-##  Max.   :2000.0   Max.   :6106.0   Max.   :   -1   Max.   : 5789.0  
+##  Min.   :   1.0   Min.   :  -3.0   Min.   :-7096   Min.   :-7083.0  
+##  1st Qu.: 250.8   1st Qu.: 223.8   1st Qu.:-3552   1st Qu.:-2903.0  
+##  Median : 500.5   Median : 867.5   Median :-2378   Median :-1384.0  
+##  Mean   : 500.5   Mean   :1246.9   Mean   :-2513   Mean   :-1303.3  
+##  3rd Qu.: 750.2   3rd Qu.:1849.2   3rd Qu.:-1333   3rd Qu.:  112.2  
+##  Max.   :1000.0   Max.   :7931.0   Max.   :  -15   Max.   : 7640.0  
 ##                                                                     
 ##    myCond           myN_Cond       myVal_Cond    
-##  Mode :logical   Min.   : 1200   Min.   :-502.0  
-##  FALSE:251       1st Qu.: 3847   1st Qu.:-501.0  
-##  TRUE :1749      Median : 6292   Median :-501.0  
-##  NA's :0         Mean   :10279   Mean   :-500.7  
-##                  3rd Qu.:12515   3rd Qu.:-500.0  
-##                  Max.   :49529   Max.   :-500.0  
-##                  NA's   :251     NA's   :251
+##  Mode :logical   Min.   : 1171   Min.   :-502.0  
+##  FALSE:80        1st Qu.: 3945   1st Qu.:-501.0  
+##  TRUE :920       Median : 6388   Median :-501.0  
+##  NA's :0         Mean   :12822   Mean   :-500.7  
+##                  3rd Qu.:14492   3rd Qu.:-500.0  
+##                  Max.   :79668   Max.   :-500.0  
+##                  NA's   :80      NA's   :80
 ```
 
 ![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
@@ -310,8 +308,8 @@ dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=5)
 ```
 
 ```
-## [1] "Running 5-play with nTrials=2000 nPerTrial=50000 and hurdle <=-500"
-## [1] "Ouctomes across 1e+08 draws of 5-play have mean: -0.0278 and variance: 128"
+## [1] "Running 5-play with nTrials=1000 nPerTrial=80000 and hurdle <=-500"
+## [1] "Ouctomes across 8e+07 draws of 5-play have mean: -0.0267 and variance: 127"
 ```
 
 ```r
@@ -319,22 +317,22 @@ graphSummary(dfSummary, nPlay=5)
 ```
 
 ```
-##     myTrial           myMax            myMin           myLast       
-##  Min.   :   1.0   Min.   :  -5.0   Min.   :-8444   Min.   :-8440.0  
-##  1st Qu.: 500.8   1st Qu.: 239.8   1st Qu.:-3794   1st Qu.:-3151.2  
-##  Median :1000.5   Median : 897.5   Median :-2588   Median :-1595.5  
-##  Mean   :1000.5   Mean   :1310.5   Mean   :-2715   Mean   :-1391.4  
-##  3rd Qu.:1500.2   3rd Qu.:1844.0   3rd Qu.:-1434   3rd Qu.:  200.5  
-##  Max.   :2000.0   Max.   :9513.0   Max.   :   -3   Max.   : 9006.0  
-##                                                                     
+##     myTrial           myMax             myMin            myLast       
+##  Min.   :   1.0   Min.   :   -5.0   Min.   :-10626   Min.   :-9322.0  
+##  1st Qu.: 250.8   1st Qu.:  275.5   1st Qu.: -5144   1st Qu.:-4235.0  
+##  Median : 500.5   Median : 1052.0   Median : -3514   Median :-2282.5  
+##  Mean   : 500.5   Mean   : 1551.3   Mean   : -3690   Mean   :-2137.2  
+##  3rd Qu.: 750.2   3rd Qu.: 2234.5   3rd Qu.: -2063   3rd Qu.: -161.5  
+##  Max.   :1000.0   Max.   :11552.0   Max.   :     4   Max.   : 7323.0  
+##                                                                       
 ##    myCond           myN_Cond       myVal_Cond    
-##  Mode :logical   Min.   :  577   Min.   :-504.0  
-##  FALSE:170       1st Qu.: 2137   1st Qu.:-502.0  
-##  TRUE :1830      Median : 3834   Median :-501.0  
-##  NA's :0         Mean   : 7425   Mean   :-501.2  
-##                  3rd Qu.: 8552   3rd Qu.:-500.0  
-##                  Max.   :47281   Max.   :-500.0  
-##                  NA's   :170     NA's   :170
+##  Mode :logical   Min.   :  490   Min.   :-504.0  
+##  FALSE:45        1st Qu.: 1990   1st Qu.:-502.0  
+##  TRUE :955       Median : 3861   Median :-501.0  
+##  NA's :0         Mean   : 9783   Mean   :-501.2  
+##                  3rd Qu.: 9837   3rd Qu.:-500.0  
+##                  Max.   :78355   Max.   :-500.0  
+##                  NA's   :45      NA's   :45
 ```
 
 ![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
@@ -362,8 +360,8 @@ dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=10)
 ```
 
 ```
-## [1] "Running 10-play with nTrials=2000 nPerTrial=50000 and hurdle <=-500"
-## [1] "Ouctomes across 1e+08 draws of 10-play have mean: -0.0517 and variance: 336"
+## [1] "Running 10-play with nTrials=1000 nPerTrial=80000 and hurdle <=-500"
+## [1] "Ouctomes across 8e+07 draws of 10-play have mean: -0.0547 and variance: 328"
 ```
 
 ```r
@@ -371,22 +369,22 @@ graphSummary(dfSummary, nPlay=10)
 ```
 
 ```
-##     myTrial           myMax           myMin            myLast        
-##  Min.   :   1.0   Min.   :  -10   Min.   :-14629   Min.   :-14523.0  
-##  1st Qu.: 500.8   1st Qu.:  423   1st Qu.: -6548   1st Qu.: -5549.8  
-##  Median :1000.5   Median : 1336   Median : -4378   Median : -2796.0  
-##  Mean   :1000.5   Mean   : 2025   Mean   : -4643   Mean   : -2585.1  
-##  3rd Qu.:1500.2   3rd Qu.: 2794   3rd Qu.: -2380   3rd Qu.:   100.2  
-##  Max.   :2000.0   Max.   :19189   Max.   :     6   Max.   : 17174.0  
+##     myTrial           myMax             myMin            myLast      
+##  Min.   :   1.0   Min.   :   -9.0   Min.   :-20893   Min.   :-20655  
+##  1st Qu.: 250.8   1st Qu.:  364.8   1st Qu.: -9051   1st Qu.: -7948  
+##  Median : 500.5   Median : 1404.0   Median : -6280   Median : -4612  
+##  Mean   : 500.5   Mean   : 2240.4   Mean   : -6587   Mean   : -4375  
+##  3rd Qu.: 750.2   3rd Qu.: 3293.8   3rd Qu.: -3764   3rd Qu.: -1318  
+##  Max.   :1000.0   Max.   :22979.0   Max.   :    -4   Max.   : 22149  
 ##                                                                      
 ##    myCond           myN_Cond       myVal_Cond    
-##  Mode :logical   Min.   :  189   Min.   :-509.0  
-##  FALSE:81        1st Qu.:  910   1st Qu.:-504.0  
-##  TRUE :1919      Median : 1795   Median :-502.0  
-##  NA's :0         Mean   : 4699   Mean   :-502.3  
-##                  3rd Qu.: 4688   3rd Qu.:-501.0  
-##                  Max.   :48995   Max.   :-500.0  
-##                  NA's   :81      NA's   :81
+##  Mode :logical   Min.   :  224   Min.   :-509.0  
+##  FALSE:24        1st Qu.:  907   1st Qu.:-504.0  
+##  TRUE :976       Median : 1754   Median :-502.0  
+##  NA's :0         Mean   : 5656   Mean   :-502.5  
+##                  3rd Qu.: 4950   3rd Qu.:-501.0  
+##                  Max.   :78332   Max.   :-500.0  
+##                  NA's   :24      NA's   :24
 ```
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
@@ -414,8 +412,8 @@ dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=50)
 ```
 
 ```
-## [1] "Running 50-play with nTrials=2000 nPerTrial=50000 and hurdle <=-500"
-## [1] "Ouctomes across 1e+08 draws of 50-play have mean: -0.245 and variance: 4978"
+## [1] "Running 50-play with nTrials=1000 nPerTrial=80000 and hurdle <=-500"
+## [1] "Ouctomes across 8e+07 draws of 50-play have mean: -0.252 and variance: 5229"
 ```
 
 ```r
@@ -424,24 +422,28 @@ graphSummary(dfSummary, nPlay=50)
 
 ```
 ##     myTrial           myMax           myMin            myLast      
-##  Min.   :   1.0   Min.   :  -38   Min.   :-53298   Min.   :-52223  
-##  1st Qu.: 500.8   1st Qu.: 1550   1st Qu.:-26045   1st Qu.:-22761  
-##  Median :1000.5   Median : 4000   Median :-18115   Median :-13520  
-##  Mean   :1000.5   Mean   : 6909   Mean   :-19036   Mean   :-12262  
-##  3rd Qu.:1500.2   3rd Qu.: 8243   3rd Qu.:-10837   3rd Qu.: -4042  
-##  Max.   :2000.0   Max.   :72961   Max.   :  -112   Max.   : 67878  
+##  Min.   :   1.0   Min.   :  -36   Min.   :-75518   Min.   :-75439  
+##  1st Qu.: 250.8   1st Qu.: 1369   1st Qu.:-38104   1st Qu.:-34245  
+##  Median : 500.5   Median : 3972   Median :-27670   Median :-22739  
+##  Mean   : 500.5   Mean   : 7795   Mean   :-28385   Mean   :-20181  
+##  3rd Qu.: 750.2   3rd Qu.: 9021   3rd Qu.:-17826   3rd Qu.: -9372  
+##  Max.   :1000.0   Max.   :86429   Max.   :  -136   Max.   : 64305  
 ##                                                                    
-##    myCond           myN_Cond       myVal_Cond    
-##  Mode :logical   Min.   :   23   Min.   :-540.0  
-##  FALSE:20        1st Qu.:   82   1st Qu.:-518.0  
-##  TRUE :1980      Median :  193   Median :-511.0  
-##  NA's :0         Mean   : 1239   Mean   :-511.8  
-##                  3rd Qu.:  618   3rd Qu.:-504.0  
-##                  Max.   :48083   Max.   :-500.0  
-##                  NA's   :20      NA's   :20
+##    myCond           myN_Cond          myVal_Cond    
+##  Mode :logical   Min.   :   20.00   Min.   :-541.0  
+##  FALSE:2         1st Qu.:   83.25   1st Qu.:-517.0  
+##  TRUE :998       Median :  183.00   Median :-509.0  
+##  NA's :0         Mean   : 1314.60   Mean   :-511.2  
+##                  3rd Qu.:  622.00   3rd Qu.:-505.0  
+##                  Max.   :78925.00   Max.   :-500.0  
+##                  NA's   :2          NA's   :2
 ```
 
 ![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png)
+
+```r
+mtxCum050 <- mtxSaver[storePer * (1:(nPerTrial/storePer)),]
+```
   
   
 ###_Results for 100-play_  
@@ -462,8 +464,8 @@ dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=100)
 ```
 
 ```
-## [1] "Running 100-play with nTrials=2000 nPerTrial=50000 and hurdle <=-500"
-## [1] "Ouctomes across 1e+08 draws of 100-play have mean: -0.521 and variance: 17670"
+## [1] "Running 100-play with nTrials=1000 nPerTrial=80000 and hurdle <=-500"
+## [1] "Ouctomes across 8e+07 draws of 100-play have mean: -0.516 and variance: 18935"
 ```
 
 ```r
@@ -472,28 +474,30 @@ graphSummary(dfSummary, nPlay=100)
 
 ```
 ##     myTrial           myMax            myMin             myLast       
-##  Min.   :   1.0   Min.   :   -52   Min.   :-115779   Min.   :-115213  
-##  1st Qu.: 500.8   1st Qu.:  2409   1st Qu.: -50995   1st Qu.: -45404  
-##  Median :1000.5   Median :  6537   Median : -36634   Median : -29048  
-##  Mean   :1000.5   Mean   : 11850   Mean   : -37862   Mean   : -26065  
-##  3rd Qu.:1500.2   3rd Qu.: 13616   3rd Qu.: -22490   3rd Qu.: -11343  
-##  Max.   :2000.0   Max.   :227971   Max.   :    -87   Max.   : 227743  
-##                                                                       
-##    myCond           myN_Cond         myVal_Cond    
-##  Mode :logical   Min.   :    9.0   Min.   :-576.0  
-##  FALSE:7         1st Qu.:   27.0   1st Qu.:-534.0  
-##  TRUE :1993      Median :   58.0   Median :-520.0  
-##  NA's :0         Mean   :  690.6   Mean   :-522.8  
-##                  3rd Qu.:  208.0   3rd Qu.:-510.0  
-##                  Max.   :46172.0   Max.   :-500.0  
-##                  NA's   :7         NA's   :7
+##  Min.   :   1.0   Min.   :   -66   Min.   :-143416   Min.   :-140509  
+##  1st Qu.: 250.8   1st Qu.:  2829   1st Qu.: -73374   1st Qu.: -67180  
+##  Median : 500.5   Median :  7214   Median : -53547   Median : -44687  
+##  Mean   : 500.5   Mean   : 14189   Mean   : -55680   Mean   : -41292  
+##  3rd Qu.: 750.2   3rd Qu.: 15369   3rd Qu.: -37283   3rd Qu.: -21843  
+##  Max.   :1000.0   Max.   :164317   Max.   :   -572   Max.   : 158507  
+##   myCond           myN_Cond         myVal_Cond    
+##  Mode:logical   Min.   :    9.0   Min.   :-570.0  
+##  TRUE:1000      1st Qu.:   28.0   1st Qu.:-535.0  
+##  NA's:0         Median :   61.0   Median :-520.0  
+##                 Mean   :  585.3   Mean   :-522.8  
+##                 3rd Qu.:  217.8   3rd Qu.:-509.0  
+##                 Max.   :64545.0   Max.   :-500.0
 ```
 
 ![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png)
+
+```r
+mtxCum100 <- mtxSaver[storePer * (1:(nPerTrial/storePer)),]
+```
   
   
 ###_Plot out cumulative quantiles_  
-The cumulative data for 1/3/5/10-play has been stored and can be analyzed.  We prepare a quantiles function and apply it to the respective cumulative outcomes files.  
+The cumulative data has been stored and can be analyzed.  We prepare a quantiles function and apply it to the respective cumulative outcomes files.  
   
 
 ```r
@@ -502,6 +506,8 @@ myQuants001 <- t(apply(mtxCum001, 1, FUN=fooFake))
 myQuants003 <- t(apply(mtxCum003, 1, FUN=fooFake))
 myQuants005 <- t(apply(mtxCum005, 1, FUN=fooFake))
 myQuants010 <- t(apply(mtxCum010, 1, FUN=fooFake))
+myQuants050 <- t(apply(mtxCum050, 1, FUN=fooFake))
+myQuants100 <- t(apply(mtxCum100, 1, FUN=fooFake))
 ```
   
   
@@ -579,7 +585,7 @@ graphCumulative <- function(quantFile, storePer=1, nPlay,
 ```
   
   
-And, then we run the function for 1/3/5/10 play.  
+And, then we run the function for 1/3/5/10/50/100 play.  
   
 
 ```r
@@ -614,3 +620,21 @@ graphCumulative(quantFile=myQuants010, storePer=storePer, nPlay=10,
 
 ![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-7.png)![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-8.png)
 
+```r
+graphCumulative(quantFile=myQuants050, storePer=storePer, nPlay=50, 
+                yLimit=c(-500, 125), abLimit=c(0,-100,-200)
+                )
+```
+
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-9.png)![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-10.png)
+
+```r
+graphCumulative(quantFile=myQuants100, storePer=storePer, nPlay=100, 
+                yLimit=c(-1000, 250), abLimit=c(0,-200,-400)
+                )
+```
+
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-11.png)![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-12.png)
+  
+  
+## Additional Comparisons  

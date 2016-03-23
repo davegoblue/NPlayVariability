@@ -181,8 +181,8 @@ Finally, the key global parameters are set.
 
 ```{r}
 
-nTrials <- 2000
-nPerTrial <- 50000
+nTrials <- 1000
+nPerTrial <- 80000
 myHurdle <- "<=-500"
 storePer <- 10
 
@@ -190,9 +190,7 @@ storePer <- 10
   
   
 ## Results  
-The simulation is repeated for each of the desired N-play outcomes.  In this case, we have run the routine for 1/3/5/10/50/100 play.  
-
-Further, we save every 10th hand for 1-play, 3-play, 5-play, and 10-play.
+The simulation is repeated for each of the desired N-play outcomes.  In this case, we have run the routine for 1/3/5/10/50/100 play.  Further, we save the cumulative results at the end of every 10th hand.  
   
 
 ###_Results for 1-play_  
@@ -249,6 +247,7 @@ mtxCum010 <- mtxSaver[storePer * (1:(nPerTrial/storePer)),]
 baseOutcomes <- getBaseOutcomes(myFileName="Play050Outcomes.csv",forceEQ=TRUE)
 dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=50)
 graphSummary(dfSummary, nPlay=50)
+mtxCum050 <- mtxSaver[storePer * (1:(nPerTrial/storePer)),]
 
 ```
   
@@ -260,12 +259,13 @@ graphSummary(dfSummary, nPlay=50)
 baseOutcomes <- getBaseOutcomes(myFileName="Play100Outcomes.csv",forceEQ=TRUE)
 dfSummary <- calcOutcomes(baseOutcomes=baseOutcomes, nPlay=100)
 graphSummary(dfSummary, nPlay=100)
+mtxCum100 <- mtxSaver[storePer * (1:(nPerTrial/storePer)),]
 
 ```
   
   
 ###_Plot out cumulative quantiles_  
-The cumulative data for 1/3/5/10-play has been stored and can be analyzed.  We prepare a quantiles function and apply it to the respective cumulative outcomes files.  
+The cumulative data has been stored and can be analyzed.  We prepare a quantiles function and apply it to the respective cumulative outcomes files.  
   
 ```{r}
 
@@ -274,6 +274,8 @@ myQuants001 <- t(apply(mtxCum001, 1, FUN=fooFake))
 myQuants003 <- t(apply(mtxCum003, 1, FUN=fooFake))
 myQuants005 <- t(apply(mtxCum005, 1, FUN=fooFake))
 myQuants010 <- t(apply(mtxCum010, 1, FUN=fooFake))
+myQuants050 <- t(apply(mtxCum050, 1, FUN=fooFake))
+myQuants100 <- t(apply(mtxCum100, 1, FUN=fooFake))
 ```
   
   
@@ -351,7 +353,7 @@ graphCumulative <- function(quantFile, storePer=1, nPlay,
 ```
   
   
-And, then we run the function for 1/3/5/10 play.  
+And, then we run the function for 1/3/5/10/50/100 play.  
   
 ```{r}
 
@@ -371,5 +373,14 @@ graphCumulative(quantFile=myQuants010, storePer=storePer, nPlay=10,
                 yLimit=c(-100, 25), abLimit=c(0,-20,-40)
                 )
 
-```
+graphCumulative(quantFile=myQuants050, storePer=storePer, nPlay=50, 
+                yLimit=c(-500, 125), abLimit=c(0,-100,-200)
+                )
 
+graphCumulative(quantFile=myQuants100, storePer=storePer, nPlay=100, 
+                yLimit=c(-1000, 250), abLimit=c(0,-200,-400)
+                )
+```
+  
+  
+## Additional Comparisons  
