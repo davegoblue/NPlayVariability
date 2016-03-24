@@ -7,3 +7,4 @@ This repository is for storing results of simulations of N-Play variability for 
 * 21-MAR-2016:  Automated quantile graphing, implemented storage of only "per every" to reduce file sizes  
 * 22-MAR-2016:  Graphed results in percent as well as units  
 * 23-MAR-2016:  Added summaries for 50/100 play; moved to 80,000 hands and 1,000 simulations  
+* 24-MAR-2016:  Back to 40,000 hands and 2,000 simulations; graphed percentage outcome comparisons  
