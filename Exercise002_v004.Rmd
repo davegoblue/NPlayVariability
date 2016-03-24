@@ -181,8 +181,8 @@ Finally, the key global parameters are set.
 
 ```{r}
 
-nTrials <- 1000
-nPerTrial <- 80000
+nTrials <- 2000
+nPerTrial <- 40000
 myHurdle <- "<=-500"
 storePer <- 10
 
@@ -384,3 +384,37 @@ graphCumulative(quantFile=myQuants100, storePer=storePer, nPlay=100,
   
   
 ## Additional Comparisons  
+Additionally, the likelihood of having various percentage results at different play lengths is calculated.
+
+```{r}
+
+for (nHands in c(100, 250, 500, 1000, 2000, 4000)) {
+    keyIndex <- round(nHands / storePer, 0)
+    keyHands <- keyIndex * storePer
+    
+    res001 <- mtxCum001[keyIndex,] / ( 1 * keyHands )
+    res003 <- mtxCum003[keyIndex,] / ( 3 * keyHands )
+    res005 <- mtxCum005[keyIndex,] / ( 5 * keyHands )
+    res010 <- mtxCum010[keyIndex,] / ( 10 * keyHands )
+    res050 <- mtxCum050[keyIndex,] / ( 50 * keyHands )
+    res100 <- mtxCum100[keyIndex,] / ( 100 * keyHands )
+    
+    plot(x=(1:nTrials)/nTrials, y=res001[order(res001)], type="l", col="red",
+         main=paste0("Results for ",keyHands," hands of base play"),
+         xlab="Percentile", ylab="Percent return",ylim=c(-0.3,0.1)
+         )
+    
+    abline(h=c(0,-0.1,-0.2),lty=2)
+    
+    lines(x=(1:nTrials)/nTrials, y=res003[order(res003)], col="purple")
+    lines(x=(1:nTrials)/nTrials, y=res005[order(res005)], col="blue")
+    ## lines(x=(1:nTrials)/nTrials, y=res010[order(res010)], col="orange")
+    ## lines(x=(1:nTrials)/nTrials, y=res050[order(res050)], col="pink")
+    lines(x=(1:nTrials)/nTrials, y=res100[order(res100)], col="dark green")
+    
+    legend("topleft",legend=c("1-play","3-play","5-play","100-play"),
+           lwd=2,col=c("red","purple","blue","dark green"),cex=0.75)
+}
+
+```
+
