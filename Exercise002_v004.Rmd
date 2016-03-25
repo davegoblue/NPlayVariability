@@ -182,7 +182,7 @@ Finally, the key global parameters are set.
 ```{r}
 
 nTrials <- 2000
-nPerTrial <- 40000
+nPerTrial <- 80000
 myHurdle <- "<=-500"
 storePer <- 10
 
@@ -417,4 +417,59 @@ for (nHands in c(100, 250, 500, 1000, 2000, 4000)) {
 }
 
 ```
+  
+  
+As well, the probability of being behind by more than X% plus Y$ is calculated for a few of the distributions of N-play.  
+  
+```{r}
 
+riskRuinPctUnit <- function(frameResults, nPlay, pctStop) {
+    
+    frameMod <- rep(0, ncol(frameResults))
+    frameTemp <- frameResults
+    
+    for (intCtr in 1:nrow(frameResults)) {
+        frameTemp[intCtr , ] <- 5 * (frameResults[intCtr , ] + pctStop * (storePer * intCtr) * nPlay)
+    }
+    
+    for (intCtr in 1:ncol(frameResults)) {
+        frameMod[intCtr] <- min(frameTemp[ , intCtr])
+    }
+    
+    frameMod <- frameMod[order(frameMod)]
+    
+    plot(x=(1:length(frameMod))/length(frameMod), y=frameMod/1000, type="l", col="purple", 
+         main=paste0("Worst unit loss below ",round(100*pctStop,2),"% for ",nPlay,
+                     "-play, through ",round(nPerTrial/1000,1),"k base hands"
+                    ),
+         xlab="Percentile", ylab=paste0("Worst unit loss (000s) below ",round(100*pctStop,2),"%")
+         )
+    
+    abline(v=c(0.50,0.10,0.01), lty=2, col=c("dark green","blue","red"))
+    keyUnits <- frameMod[round(c(0.50, 0.10, 0.01) * length(frameMod),0)]/1000
+    abline(h=keyUnits, lty=2, col=c("dark green","blue","red"))
+
+    legend("bottomright", col=c("dark green","blue","red"), lty=2, lwd=2, 
+           legend=paste0(c("50% (", "10% (", "1%   ("),round(keyUnits,2),")")
+           )
+}
+
+```
+  
+  
+And then call the function a few times for a few scenarios of interest:  
+  
+```{r}
+
+riskRuinPctUnit(frameResults=mtxCum001, nPlay=1, pctStop=0.01)  ## 1-play, 1%
+riskRuinPctUnit(frameResults=mtxCum003, nPlay=3, pctStop=0.01)  ## 3-play, 1%
+riskRuinPctUnit(frameResults=mtxCum005, nPlay=5, pctStop=0.01)  ## 5-play, 1%
+riskRuinPctUnit(frameResults=mtxCum010, nPlay=10, pctStop=0.01)  ## 10-play, 1%
+
+riskRuinPctUnit(frameResults=mtxCum001, nPlay=1, pctStop=0.02)  ## 1-play, 2%
+riskRuinPctUnit(frameResults=mtxCum003, nPlay=3, pctStop=0.02)  ## 3-play, 2%
+riskRuinPctUnit(frameResults=mtxCum005, nPlay=5, pctStop=0.02)  ## 5-play, 2%
+riskRuinPctUnit(frameResults=mtxCum010, nPlay=10, pctStop=0.02)  ## 10-play, 2%
+
+```
+  
