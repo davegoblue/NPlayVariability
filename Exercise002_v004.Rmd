@@ -473,3 +473,139 @@ riskRuinPctUnit(frameResults=mtxCum010, nPlay=10, pctStop=0.02)  ## 10-play, 2%
 
 ```
   
+And then look at the histograms of results after the final hand:  
+
+```{r}
+
+keyIndex <- round(nPerTrial / storePer, 0)
+keyHands <- keyIndex * storePer
+
+## Histogram for 100 vs. 50
+hist(mtxCum100[keyIndex,]/keyHands/100, col=rgb(0,0,1,0.5), 
+     breaks=seq(-0.08,0.08,by=0.005), ylim=c(0,1000), 
+     main=paste0("Percentage result after ",keyHands," Hands"),xlab="% Result"
+     )
+hist(mtxCum050[keyIndex,]/keyHands/50, col=rgb(1,0,0,0.5), add=TRUE, 
+     breaks=seq(-0.08,0.08,by=0.005)
+     )
+legend("topright",legend=c("50-play","100-play","Overlap"),pch=20,pt.cex=2,
+       col=c(rgb(1,0,0,0.5),rgb(0,0,1,0.5),rgb(0.75,0,0.75,1))
+       )
+
+## Histogram for 50 vs. 10
+hist(mtxCum050[keyIndex,]/keyHands/50, col=rgb(0,0,1,0.5), 
+     breaks=seq(-0.08,0.08,by=0.005), ylim=c(0,1000), 
+     main=paste0("Percentage result after ",keyHands," Hands"),xlab="% Result"
+     )
+hist(mtxCum010[keyIndex,]/keyHands/10, col=rgb(1,0,0,0.5), add=TRUE, 
+     breaks=seq(-0.08,0.08,by=0.005)
+     )
+legend("topright",legend=c("10-play","50-play","Overlap"),pch=20,pt.cex=2,
+       col=c(rgb(1,0,0,0.5),rgb(0,0,1,0.5),rgb(0.75,0,0.75,1))
+       )
+
+## Histogram for 10 vs. 5
+hist(mtxCum010[keyIndex,]/keyHands/10, col=rgb(0,0,1,0.5), 
+     breaks=seq(-0.08,0.08,by=0.005), ylim=c(0,1000), 
+     main=paste0("Percentage result after ",keyHands," Hands"),xlab="% Result"
+     )
+hist(mtxCum005[keyIndex,]/keyHands/5, col=rgb(1,0,0,0.5), add=TRUE, 
+     breaks=seq(-0.08,0.08,by=0.005)
+     )
+legend("topright",legend=c("5-play","10-play","Overlap"),pch=20,pt.cex=2,
+       col=c(rgb(1,0,0,0.5),rgb(0,0,1,0.5),rgb(0.75,0,0.75,1))
+       )
+
+## Histogram for 5 vs. 3
+hist(mtxCum005[keyIndex,]/keyHands/5, col=rgb(0,0,1,0.5), 
+     breaks=seq(-0.08,0.08,by=0.005), ylim=c(0,1000), 
+     main=paste0("Percentage result after ",keyHands," Hands"),xlab="% Result"
+     )
+hist(mtxCum003[keyIndex,]/keyHands/3, col=rgb(1,0,0,0.5), add=TRUE, 
+     breaks=seq(-0.08,0.08,by=0.005)
+     )
+legend("topright",legend=c("3-play","5-play","Overlap"),pch=20,pt.cex=2,
+       col=c(rgb(1,0,0,0.5),rgb(0,0,1,0.5),rgb(0.75,0,0.75,1))
+       )
+
+## Histogram for 3 vs. 1
+hist(mtxCum003[keyIndex,]/keyHands/3, col=rgb(0,0,1,0.5), 
+     breaks=seq(-0.08,0.08,by=0.005), ylim=c(0,1000), 
+     main=paste0("Percentage result after ",keyHands," Hands"),xlab="% Result"
+     )
+hist(mtxCum001[keyIndex,]/keyHands/1, col=rgb(1,0,0,0.5), add=TRUE, 
+     breaks=seq(-0.08,0.08,by=0.005)
+     )
+legend("topright",legend=c("1-play","3-play","Overlap"),pch=20,pt.cex=2,
+       col=c(rgb(1,0,0,0.5),rgb(0,0,1,0.5),rgb(0.75,0,0.75,1))
+       )
+
+## Histogram for 100 vs. 1
+hist(mtxCum100[keyIndex,]/keyHands/100, col=rgb(0,0,1,0.5), 
+     breaks=seq(-0.08,0.08,by=0.005), ylim=c(0,1000), 
+     main=paste0("Percentage result after ",keyHands," Hands"),xlab="% Result"
+     )
+hist(mtxCum001[keyIndex,]/keyHands/1, col=rgb(1,0,0,0.5), add=TRUE, 
+     breaks=seq(-0.08,0.08,by=0.005)
+     )
+legend("topright",legend=c("1-play","100-play","Overlap"),pch=20,pt.cex=2,
+       col=c(rgb(1,0,0,0.5),rgb(0,0,1,0.5),rgb(0.75,0,0.75,1))
+       )
+
+## Box plot data
+frameBoxPlot <- rbind(data.frame(pctFinal=mtxCum100[keyIndex,]/keyHands/100,type="100-play"),
+                      data.frame(pctFinal=mtxCum050[keyIndex,]/keyHands/50,type="50-play"),
+                      data.frame(pctFinal=mtxCum010[keyIndex,]/keyHands/10,type="10-play"),
+                      data.frame(pctFinal=mtxCum005[keyIndex,]/keyHands/5,type="5-play"),
+                      data.frame(pctFinal=mtxCum003[keyIndex,]/keyHands/3,type="3-play"),
+                      data.frame(pctFinal=mtxCum001[keyIndex,]/keyHands/1,type="1-play")
+                      )
+
+boxplot(pctFinal ~ type, data=frameBoxPlot, col="light blue", ylab="% Return", 
+        main=paste0("Percentage Outcomes after ",keyHands," Hands")
+        )
+```
+  
+Upon inspection, the histograms reasonably resemble normal distributions, as could be expected under the CLT with such a large number of hands.  Further, the following trends are noted:  
+  
+* The 100-play and 1-play histograms look very different, with much smaller sigma for 100-play  
+* Overlapped histograms of 1 click difference in N-play tend to reasonably resemble one another, although with somewhat larger differences for 50 -> 10 and for 3 -> 1  
+* The box-plots reveal that the primary outliers are on the positive side.  In other words, the mean is achieved through a slightly lower median pulled up by a few positive outliers  
+  
+We can then look at a few distributional tendencies through statistics:  
+
+```{r}
+
+meansFinal <- tapply(frameBoxPlot$pctFinal, frameBoxPlot$type, FUN=mean)
+mediansFinal <- tapply(frameBoxPlot$pctFinal, frameBoxPlot$type, FUN=median)
+sdFinal <- tapply(frameBoxPlot$pctFinal, frameBoxPlot$type, FUN=sd)
+
+pct01Final <- tapply(frameBoxPlot$pctFinal, frameBoxPlot$type, 
+                     FUN=function(x) { quantile(x, 0.01) } 
+                     )
+pct99Final <- tapply(frameBoxPlot$pctFinal, frameBoxPlot$type, 
+                     FUN=function(x) { quantile(x, 0.99) } 
+                     )
+
+round(meansFinal,4)
+round(mediansFinal,4)
+round(sdFinal,4)
+round(pct01Final,4)
+round(pct99Final,4)
+
+plot(x=meansFinal, type="l", col="blue", lwd=2, ylim=c(-0.04,0.04), 
+     ylab="% Return", xaxt="n", xlab="",main=paste0("Percentage Return at ",keyHands," Hands")
+     )
+axis(1,at=1:6,labels=attr(meansFinal,"dimname")[[1]])
+lines(mediansFinal,col="purple",lwd=2)
+lines(meansFinal+sdFinal,col="dark green",lty=2,lwd=2)
+lines(meansFinal-sdFinal,col="dark green",lty=2,lwd=2)
+lines(pct99Final,col="orange",lty=2,lwd=2)
+lines(pct01Final,col="orange",lty=2,lwd=2)
+abline(h=c(0,-0.0046,-0.02,-0.04),lwd=0.5,lty=2)
+legend("topleft", legend=c("99%/1%","Mean +/- 1SD","Median","Mean"), cex=0.85, 
+       lwd=2, lty=c(1,1,2,2), col=c("orange","dark green","purple","blue")
+       )
+
+```
+
