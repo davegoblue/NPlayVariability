@@ -9,4 +9,5 @@ This repository is for storing results of simulations of N-Play variability for 
 * 23-MAR-2016:  Added summaries for 50/100 play; moved to 80,000 hands and 1,000 simulations  
 * 24-MAR-2016:  Back to 40,000 hands and 2,000 simulations; graphed percentage outcome comparisons  
 * 25-MAR-2016:  Up to 80,000 hands and 2,000 simulations; graphed data relevant to risks of ruin  
+* 26-MAR-2016:  Graphed measures of distributional tendency  
   
